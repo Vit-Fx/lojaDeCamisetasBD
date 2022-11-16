@@ -1,0 +1,144 @@
+/* Vitoria e Henrique*/
+drop procedure if exists spExibeClientesAtivos;
+delimiter $$
+create procedure spExibeClientesAtivos(
+	in pTipo char(1),
+    in pStatus bit
+)
+begin
+	if (pTipo = "f") and (pStatus = 1) then
+select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pf.no_CPF as CPF,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pf on tbl_cliente.cd_cliente = tbl_pf.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_cliente.ds_status = 1;
+    
+    else
+		if (pTipo = "f") and (pStatus = 0) then
+select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pf.no_CPF as CPF,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pf on tbl_cliente.cd_cliente = tbl_pf.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_cliente.ds_status = 0;
+    
+    else
+		if (pTipo = "j") and (pStatus = 1) then
+select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pj.no_CNPJ as CNPJ,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pj on tbl_cliente.cd_cliente = tbl_pj.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_cliente.ds_status = 1;
+    
+    else
+		if (pTipo = "j") and (pStatus = 0) then
+select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pj.no_CNPJ as CNPJ,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pj on tbl_cliente.cd_cliente = tbl_pj.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_cliente.ds_status = 0;
+    
+    end if;
+    end if;
+    end if;
+    end if;
+end $$
+delimiter ; 
+
+use db_lojaatarde;
+call spExibeClientesAtivos('J',1);
+
+
+
+
+
+drop procedure if exists spExibeClientePFouPJ;
+delimiter $$
+create procedure spExibeClientePFouPJ(
+	in pVal varchar(14)
+)
+begin
+declare qtd int;
+set qtd = character_length(pVal);
+if (qtd = 11) then
+select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pf.no_CPF as CPF,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pf on tbl_cliente.cd_cliente = tbl_pf.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_pf.no_CPF = pVal; 
+    else
+    if ( qtd = 14) then
+    select 
+	tbl_cliente.cd_cliente as cod,
+    tbl_cliente.nm_cliente as nome,
+    tbl_cliente.nm_logradouro as log,
+    tbl_cliente.no_logradouro as nolog,
+    tbl_cliente.ds_complemento as complemento,
+    tbl_cliente.nm_bairro as bairro,
+    tbl_cliente.nm_login as login,
+    tbl_cliente.ds_senha as senha,
+    tbl_pj.no_CNPJ as CNPJ,
+    tbl_telefonecli.no_telefone AS telefone
+	from tbl_cliente
+	inner join tbl_pj on tbl_cliente.cd_cliente = tbl_pj.cd_cliente
+	inner join tbl_telefonecli on tbl_cliente.cd_cliente = tbl_telefonecli.cd_cliente
+    where tbl_pj.no_CNPJ =pVal;
+    else
+    if (qtd <11) or (qtd > 14) or (qtd between 11 and 14) then
+     select 'Ocorreu um erro ao executar a transação' as resultado;
+    end if;
+    end if;
+    end if;
+end $$
+delimiter ; 
+call spExibeClientePFouPJ('111111111111');
+    

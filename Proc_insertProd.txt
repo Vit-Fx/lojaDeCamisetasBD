@@ -1,0 +1,53 @@
+AMANDA e VITORIA
+
+
+drop procedure if exists sp_insprod;
+delimiter $$
+	create procedure sp_insprod(
+		in pnome varchar(80), 
+        in pquant int,
+        in pstatus bit(1),
+        in ptam int,
+        in pcat int,
+        in pvalor decimal(10,2)
+	)
+    
+	begin
+		declare pcod int;
+        REPLACE into tbl_produto
+				(nm_produto,
+				vl_produto,
+				ds_status
+				)
+				values(pnome,pvalor,pstatus);
+				
+				set pcod = last_insert_id();
+                
+				insert into tbl_prod_tamanho(cd_tamanho, cd_produto, qt_produto)
+				values(ptam, pcod, pquant);
+                
+				insert into tbl_prod_cat(cd_cat, cd_produto)
+				values(pcat, pcod);
+		    end $$
+	delimiter ;
+    
+    call sp_insprod('Camiseta Etec',10,0,2,3,20.00);
+
+
+-- inserindo tamanhos
+drop procedure if exists sp_instam;
+delimiter $$
+	create procedure sp_instam(
+	in psg varchar(2)
+    )
+    begin 
+    insert into tbl_tamanho(sg_tamanho)
+    values (psg);
+    end $$
+delimiter ;
+
+call sp_instam('P');
+call sp_instam('M');
+call sp_instam('G');
+call sp_instam('GG');
+call sp_instam('G3');

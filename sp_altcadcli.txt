@@ -1,0 +1,50 @@
+drop procedure if exists sp_altcadcli;
+delimiter $$
+	create procedure sp_altcadcli(
+    pCod int,
+	pTipoPessoa char(1),
+	pCliente varchar(80),
+	plogradouro varchar(80),
+	pNumero varchar(5),
+	pComplemento varchar(20),
+	pBairro varchar(20),
+	pLogin varchar(20),
+	pSenha char(6),
+	pStatus bit,
+	pCPF char(11),
+	pCNPJ char(14)
+)
+begin
+	-- criação de variável
+    declare cod int;
+    declare erro_sql tinyint default false;
+    declare continue handler for sqlexception set erro_sql = true;
+	start transaction;
+	if (pTipoPessoa = "F") then	-- se o valor do parametro pTipoPessoa é igual a F então execute o código abaixo
+		update tbl_cliente
+			set nm_Cliente = pCliente,nm_Logradouro = plogradouro,no_Logradouro = pNumero,
+			ds_Complemento = pComplemento,nm_Bairro = pBairro,nm_login = pLogin,ds_senha = pSenha,ds_status = pStatus
+		where cd_Cliente = pCod;   
+    
+		update tbl_PF
+			set no_CPF= pCPF
+            where cd_Cliente = pcod; -- inserindo registros na tabela PF    
+	else -- caso o valor do parametro pTipoPessoa NÃO FOR IGUAL a F então ele só pode ser J, no caso execute o código abaixo
+		update tbl_cliente
+			set nm_Cliente = pCliente,nm_Logradouro = plogradouro,no_Logradouro = pNumero,
+			ds_Complemento = pComplemento,nm_Bairro = pBairro,nm_login = pLogin,ds_senha = pSenha,ds_status = pStatus
+		where cd_Cliente = pCod; 
+
+        update tbl_PJ set no_CNPJ = pCNPJ where cd_Cliente = pCod;         
+	end if;
+    if(erro_sql = false) then -- se  houver algum erro na execução acima 
+			commit;
+			select 'transação executada com sucesso' as resultado;
+		else
+			rollback;
+            select 'Ocorreu um erro ao executar a transação' as resultado;
+    end if;
+end $$
+delimiter ;
+
+call sp_altcadcli(6,"f", "Lojas Mel","Geroge Smith","85","","Jardim Íris","Lojas.Mel","15478",0,"","");
